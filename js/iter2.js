@@ -3,7 +3,7 @@
 window.onload = init();
 
 function init() {
-  d3.json("../prosperLoanData.csv", draw)
+  d3.json("../workingLoan.csv", draw)
 }
 
 function draw(data) {
