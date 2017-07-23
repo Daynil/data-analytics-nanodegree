@@ -7,6 +7,7 @@ function init() {
 }
 
 function draw(data) {
+  debugger;
   d3.select(".d3anchor")
     .append("h2")
     .text("works!")
