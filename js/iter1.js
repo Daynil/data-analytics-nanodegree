@@ -31,9 +31,9 @@ function pivot(data, index, column, value) {
   agg.forEach(prosperAgg => {
     prosperAgg.values.forEach(incomeAgg => {
       let pivotPoint = {}
-      pivotPoint[index] = prosperAgg.key;
+      pivotPoint[index] = +prosperAgg.key;
       pivotPoint[column] = incomeAgg.key;
-      pivotPoint[value] = incomeAgg.value;
+      pivotPoint['value'] = incomeAgg.values;
       pivotData.push(pivotPoint);
     });
   });
@@ -42,22 +42,20 @@ function pivot(data, index, column, value) {
 }
 
 function draw(data) {
-  //console.log(data);
-  // d3.select('.d3anchor')
-  //   .append('h2')
-  //   .text('works!')
+  
+  let valRange = d3.extent(data, d => d['value']);
   
   let xScale = d3.scale.ordinal()
     .domain(d3.range(1, 6))
-    .rangeRoundBands([0, w])
+    .rangeRoundBands([0, w]);
   let yScale = d3.scale.ordinal()
     .domain(d3.range(1, 12))
-    .rangeRoundBands([0, h], 0.01);
+    .rangeRoundBands([h, 0]);
 
   let xAxisTicks = ['$1-25k', '$25k-50k', '$50k-75k', '$75k-100k', '$100k+'];
   let xAxis = d3.svg.axis().scale(xScale).orient('bottom').tickFormat(d => xAxisTicks[d - 1]);
 
-  let yAxisTicks = ['11', '10', '9', '8', '7', '6', '5', '4', '3', '2', '1'];
+  let yAxisTicks = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
   let yAxis = d3.svg.axis().scale(yScale).orient('left').tickFormat(d => yAxisTicks[d - 1]);
 
   let svg = d3.select('.d3anchor')
@@ -71,8 +69,34 @@ function draw(data) {
     .attr('transform', `translate(0, ${h - 4})`)
     .call(xAxis);
 
-	svg.append('g')
-		.attr('class', 'y axis')
-		.attr('transform', 'translate(-1, 0)')
-		.call(yAxis);
+  svg.append('g')
+    .attr('class', 'y axis')
+    .attr('transform', 'translate(-1, 0)')
+    .call(yAxis);
+    
+  svg.selectAll('rect')
+    .data(data)
+    .enter()
+    .append('rect')
+    .attr('x', d => xScale(d['IncomeRange']))
+    .attr('y', d => yScale(d['ProsperScore']))
+    .attr('width',  w / (data.length / 12) )
+    .attr('height', yScale.rangeBand())
+    .attr('fill', d => getCellColor(d['value'], valRange) );
+}
+
+/**
+ * Get cell color based on value using hsl scale
+ * 
+ * @param {any} value 
+ * @param {any} valRange 
+ */
+function getCellColor(value, valRange) {
+  let minColor = 60; // Yellow
+  let maxColor = 120; // Green
+  let range = maxColor - minColor;
+
+  let scale = (value - valRange[0]) / valRange[1];
+  let hue = minColor + (range * scale)
+  return `hsl(${hue}, 100%, 50%)`
 }
