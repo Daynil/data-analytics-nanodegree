@@ -27,6 +27,29 @@ a.button:hover {
   top: 20px;
 }
 
+.nextButton {
+  display: inline-block;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.information {
+  position: relative;
+  margin: 0 auto;
+  border: 1px solid hsla(0, 0%, 0%, 0.3);
+  border-radius: 10px;
+  padding: 20px;
+  width: 80%;
+}
+
+.infoTxt {
+  display: block;
+}
+
+.info2, .info3 {
+  display: none;
+}
+
 #d3anchor {
   width: 1050px;
   display: inline-block;
