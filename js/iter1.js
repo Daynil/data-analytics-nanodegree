@@ -3,33 +3,74 @@
 const w = 1000;
 const h = 500;
 let fullData;
+let pivotedData;
+let infoData = [
+  {
+    "value": "BorrowerAPR",
+    "text": "This data set contains information about loans from the peer to peer lending company Prosper. Each borrower enters various information about themselves, including salary, which is verfied, as well as having a credit record pulled. Based on this data, Prosper calculates a 'Prosper Score', which indicates investment risk on a scale from 1-11, 11 being best, or lowest risk.Shown below, we see that the lowest loan APRs go to those with the lowest risk score. Interestingly, salary doesn't play nearly as much a roll as the Prosper Score. Next, let's see how well Prosper Score and salary can paint a picture with respect to other indicators of financial health."
+  },
+  {
+    "value": "RevolvingCreditBalance",
+    "text": "Revolving credit balance is the portion of credit card spending that goes unpaid at the end of a billing cycle. Although you would typically think an unpaid credit card balance is a bad thing for loans, loan companies actually don't consider it to be a bad thing on its own. Below, we can see that although higher unpaid balances are much more common as salary increases, the prosper score is unaffected."
+  },
+  {
+    "value": "DelinquenciesLast7Years",
+    "text": "Much more concerning to loan companies is delinquency in payment. Below, we can see that a high rate of delinquency over the last 7 years is associated strongly with poorer Proper Scores. Additionally, it appears that higher rates of delinquency are more likely the less you earn, particularly if you are rated with a low Prosper Score, which indicates poorer financial health overall."
+  }
+];
+
+let currentScreen = 2;
 
 window.onload = init();
 
 function init() {
+  
   d3.csv('../workingLoan.csv', csvdata => {
+    d3.select('.nextButton').on('click', () => changeScreen()); 
     fullData = csvdata;
-    pivot('ProsperScore', 'IncomeRange', 'BorrowerAPR');
+    pivot();
+    changeScreen(currentScreen);
   });
+}
+
+function changeScreen() {
+  // Rotate texts and data
+  currentScreen = (currentScreen + 1) % 3;
+  if (currentScreen === 2) d3.select('.nextButton').text(() => 'Restart');
+  else d3.select('.nextButton').text(() => 'Next');
+  d3.select('#infoTxt').text(() => infoData[currentScreen]['text']);
+  d3.selectAll('.graphComponent').remove();
+
+  let filtered = pivotedData.map(loan => {
+    let slice = {
+      ProsperScore: loan.ProsperScore,
+      IncomeRange: loan.IncomeRange,
+      value: loan[infoData[currentScreen]['value']]
+    };
+    return slice;
+  });
+  draw(filtered);
 }
 
 /**
  * Create a pivot table representation of data and draw
- * 
- * @param {any} index The desired index to pivot on.
- * @param {any} column The desired column to pivot on.
- * @param {any} value The field to aggregate via mean (intersection of index and column)
  */
-function pivot(index, column, value) {
+function pivot() {
   let incomeRanges = ['$1-24,999', '$25,000-49,999', '$50,000-74,999', '$75,000-99,999', '$100,000+']
 
   let data = fullData;
   // Nest data by index and column
- let agg = d3.nest()
-          .key(d => d[index])
-          .key(d => d[column])
+  let agg = d3.nest()
+          .key(d => d['ProsperScore'])
+          .key(d => d['IncomeRange'])
           // Rollup by mean
-          .rollup(leaves => d3.mean(leaves, d => d[value]))
+          .rollup(leaves => {
+            return {
+              "BorrowerAPR": d3.mean(leaves, d => d["BorrowerAPR"]),
+              "RevolvingCreditBalance": d3.mean(leaves, d => d["RevolvingCreditBalance"]),
+              "DelinquenciesLast7Years": d3.mean(leaves, d => d["DelinquenciesLast7Years"])
+            }
+          })
           .entries(data);
 
   // Unroll into pivot table
@@ -38,15 +79,15 @@ function pivot(index, column, value) {
     prosperAgg.values.forEach(incomeAgg => {
       let pivotPoint = {}
       // Transform axes to integers for scaling
-      pivotPoint[index] = +prosperAgg.key;
-      pivotPoint[column] = incomeRanges.indexOf(incomeAgg.key) + 1;
-
-      pivotPoint['value'] = incomeAgg.values;
+      pivotPoint['ProsperScore'] = +prosperAgg.key;
+      pivotPoint['IncomeRange'] = incomeRanges.indexOf(incomeAgg.key) + 1;
+      pivotPoint['BorrowerAPR'] = incomeAgg.values.BorrowerAPR;
+      pivotPoint['RevolvingCreditBalance'] = incomeAgg.values.RevolvingCreditBalance;
+      pivotPoint['DelinquenciesLast7Years'] = incomeAgg.values.DelinquenciesLast7Years;
       pivotData.push(pivotPoint);
     });
   });
-
-  draw(pivotData);
+  pivotedData = pivotData;
 }
 
 function draw(data) {
@@ -71,6 +112,7 @@ function draw(data) {
 
   let svg = d3.select('#d3anchor')
     .append('svg')
+    .attr('class', 'graphComponent')
     .attr('width', w + 20)
     .attr('height', h)
     .style('padding', '25px');
@@ -85,9 +127,12 @@ function draw(data) {
     .attr('transform', 'translate(-1, 0)')
     .call(yAxis);
     
-  svg.selectAll('rect')
-    .data(data)
-    .enter()
+  let rects = svg.selectAll('rect')
+    .data(data);
+
+  rects.exit().remove();
+
+  rects.enter()
     .append('rect')
     .attr('x', d => xScale(d['IncomeRange']))
     .attr('y', d => yScale(d['ProsperScore']))
@@ -102,14 +147,18 @@ function draw(data) {
                             (valRange[1] - valRange[0]) / legendSteps);
   let legendCellWidth = 30;
   let legendCellHeight = 20;
-  d3.select('#legend')
+  let legend = d3.select('#legend')
     .append('svg')
+    .attr('class', 'graphComponent')
     .attr('width', legendCellWidth)
     .attr('height', legendData.length * legendCellHeight)
     .style('margin-left', '15px')
     .selectAll('rect')
-    .data(legendData)
-    .enter()
+    .data(legendData);
+
+  legend.exit().remove()
+
+  legend.enter()
     .append('rect')
     .attr('y', (d, i) => i * legendCellHeight + legendCellHeight)
     .attr('height', legendCellHeight)
@@ -117,19 +166,25 @@ function draw(data) {
     .attr('fill', d => colorScale(d));
 
   let legendTextSteps = 5;
-  let legendText = d3.range(valRange[0], valRange[1],
+  let legendTextData = d3.range(valRange[0], valRange[1],
                             (valRange[1] - valRange[0]) / legendTextSteps);
-  d3.select('#legend')
+  let legendText = d3.select('#legend')
     .append('svg')
+    .attr('class', 'graphComponent')
     .attr('width', '200px')
     .attr('height', legendData.length * legendCellHeight)
     .style('margin-left', '10px')
     .selectAll('text')
-    .data(legendText)
-    .enter()
+    .data(legendTextData);
+
+  legendText.exit().remove()
+
+  legendText.enter()
     .append('text')
     .attr('y', (d, i) => i * legendCellHeight * (legendSteps / legendTextSteps) + legendCellHeight * 2 - 4)
     .text(d => {
       return Math.round(d*100) + '%'
-    })
+    });
+
+    
 }
