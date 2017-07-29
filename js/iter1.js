@@ -1,6 +1,6 @@
 'use strict';
 
-const w = 1000;
+const w = 800;
 const h = 500;
 let fullData;
 let pivotedData;
@@ -118,15 +118,15 @@ function draw(data) {
     .style('padding', '25px');
 
   svg.append('g')
-    .attr('class', 'x axis')
-    .attr('transform', `translate(0, ${h - 4})`)
-    .call(xAxis);
+      .attr('class', 'x axis')
+      .attr('transform', `translate(0, ${h - 4})`)
+      .call(xAxis);
 
   svg.append('g')
-    .attr('class', 'y axis')
-    .attr('transform', 'translate(-1, 0)')
-    .call(yAxis);
-    
+      .attr('class', 'y axis')
+      .attr('transform', 'translate(-1, 0)')
+      .call(yAxis);
+
   let rects = svg.selectAll('rect')
     .data(data);
 

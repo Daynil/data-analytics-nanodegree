@@ -51,10 +51,34 @@ a.button:hover {
 }
 
 #d3anchor {
-  width: 1050px;
+  width: 850px;
   display: inline-block;
   margin-left: 100px;
   margin-top: 50px;
+}
+
+.container {
+  position: relative;
+}
+
+.ylabel {
+  display: inline-block;
+  transform: rotate(-90deg);
+  vertical-align: top;
+  position: absolute;
+  left: 20px;
+  top: 250px;
+}
+
+.xcontainer {
+  position: relative;
+  text-align: center;
+}
+
+.xlabel {
+  position: absolute;
+  left: 470px;
+  top: 20px;
 }
 
 #legend {
