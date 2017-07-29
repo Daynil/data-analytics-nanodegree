@@ -29,3 +29,15 @@ I showed my initial iteration to 3 people to get their feedback. The following w
 * Can't tell what the color variable value is, especially on the ones that are close to each other and the color difference is slight
 * Revolving credit balance was too precisely rounded on the legend, which looked unnatural for a "scale" to show
 * People liked the button creating changes in the graph, which clearly showed how the various variables interacted differently with prosper score and income range.
+
+
+
+### References
+
+https://stackoverflow.com/questions/17671252/d3-create-a-continuous-color-scale-with-many-strings-inputs-for-the-range-and-d
+
+http://bl.ocks.org/AndrewStaroscik/5222370
+
+https://github.com/d3/d3-3.x-api-reference/blob/master/API-Reference.md
+
+http://bl.ocks.org/bewest/5075497
