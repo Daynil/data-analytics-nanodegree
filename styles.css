@@ -40,6 +40,8 @@ a.button:hover {
   border-radius: 10px;
   padding: 20px;
   width: 80%;
+  height: 120px;
+  overflow: auto;
 }
 
 #infoTxt {
@@ -59,6 +61,8 @@ a.button:hover {
 
 .container {
   position: relative;
+  width: 1300px;
+  margin: 0 auto;
 }
 
 .ylabel {
@@ -94,7 +98,7 @@ a.button:hover {
   left: 10px;
   top: -15px;
   font-weight: bold;
-  width: 200px;
+  width: 220px;
 }
 
 #chart {

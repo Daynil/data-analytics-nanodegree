@@ -7,7 +7,7 @@ let pivotedData;
 let infoData = [
   {
     "value": "BorrowerAPR",
-    "text": "This data set contains information about loans from the peer to peer lending company Prosper. Each borrower enters various information about themselves, including salary, which is verfied, as well as having a credit record pulled. Based on this data, Prosper calculates a 'Prosper Score', which indicates investment risk on a scale from 1-11, 11 being best, or lowest risk.Shown below, we see that the lowest loan APRs go to those with the lowest risk score. Interestingly, salary doesn't play nearly as much a roll as the Prosper Score. Next, let's see how well Prosper Score and salary can paint a picture with respect to other indicators of financial health."
+    "text": "This data set contains information about loans from the peer to peer lending company Prosper. Each borrower enters various information about themselves, including salary, which is verfied, as well as having a credit record pulled. Based on this data, Prosper calculates a 'Prosper Score', which indicates investment risk on a scale from 1-11, 11 being best, or lowest risk Shown below, we see that the lowest loan APRs go to those with the lowest risk score. Interestingly, salary doesn't play nearly as much a roll as the Prosper Score. Next, let's see how well Prosper Score and salary can paint a picture with respect to other indicators of financial health."
   },
   {
     "value": "RevolvingCreditBalance",
@@ -39,6 +39,14 @@ function changeScreen() {
   if (currentScreen === 2) d3.select('.nextButton').text(() => 'Restart');
   else d3.select('.nextButton').text(() => 'Next');
   d3.select('#infoTxt').text(() => infoData[currentScreen]['text']);
+  d3.select('#legendtxt').text(() => {
+    let curVar = infoData[currentScreen]['value'];
+    let displayLegend = "";
+    if (curVar === "BorrowerAPR") displayLegend = "Loan APR";
+    else if (curVar === "RevolvingCreditBalance") displayLegend = "Revolving Credit Balance";
+    else displayLegend = "Delinquencies Last 7 Years";
+    return displayLegend;
+  });
   d3.selectAll('.graphComponent').remove();
 
   let filtered = pivotedData.map(loan => {
@@ -49,7 +57,7 @@ function changeScreen() {
     };
     return slice;
   });
-  draw(filtered);
+  draw(filtered, infoData[currentScreen]['value']);
 }
 
 /**
@@ -90,7 +98,7 @@ function pivot() {
   pivotedData = pivotData;
 }
 
-function draw(data) {
+function draw(data, curVar) {
 
   let colorScale = d3.scale.linear()
     .domain(d3.extent(data, d => d['value']))
@@ -183,7 +191,16 @@ function draw(data) {
     .append('text')
     .attr('y', (d, i) => i * legendCellHeight * (legendSteps / legendTextSteps) + legendCellHeight * 2 - 4)
     .text(d => {
-      return Math.round(d*100) + '%'
+      // Adjust display scale based on current variable
+      if (curVar === "BorrowerAPR") {
+        return Math.round(d*100) + '%';
+      }
+      else if (curVar === "RevolvingCreditBalance") {
+        return '$' + d.toLocaleString(undefined, {maximumFractionDigits: 0});
+      }
+      else {
+        return Math.round(d);
+      }
     });
 
     
