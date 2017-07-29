@@ -1,5 +1,29 @@
 * {
-  font-family: sans-serif
+  font-family: 'Raleway', sans-serif
+}
+
+.intro {
+  width: 70%;
+  text-align: left;
+  margin: 0 auto;
+}
+
+.steps {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: space-around;
+  height: 150px;
+}
+
+a.link {
+  color: rgb(3, 129, 102);
+  text-decoration: underline;
+  transition: all 0.3s ease;
+}
+
+a.link:hover {
+  color: rgb(178, 225, 104);
+  text-decoration: none;
 }
 
 a.button {
@@ -40,7 +64,7 @@ a.button:hover {
   border-radius: 10px;
   padding: 20px;
   width: 80%;
-  height: 120px;
+  height: 130px;
   overflow: auto;
 }
 
