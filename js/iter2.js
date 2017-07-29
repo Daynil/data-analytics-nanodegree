@@ -27,7 +27,6 @@ window.onload = init();
 window.onmousemove = updateMouse;
 
 function init() {
-  
   d3.csv('../workingLoan.csv', csvdata => {
     d3.select('.nextButton').on('click', () => changeScreen()); 
     fullData = csvdata;
@@ -36,16 +35,23 @@ function init() {
   });
 }
 
+/**
+ * Track mouse position to use when determining where to place tooltip near cursor.
+ */
 function updateMouse(e) {
 	mouse.x = e.pageX;
 	mouse.y = e.pageY;
 }
 
+/**
+ * Rotate texts and data to the next variable
+ */
 function changeScreen() {
-  // Rotate texts and data
+  // Rotate back to 1 after val 2 and change button text to indicate
   currentScreen = (currentScreen + 1) % 3;
   if (currentScreen === 2) d3.select('.nextButton').text(() => 'Restart');
   else d3.select('.nextButton').text(() => 'Next');
+
   d3.select('#infoTxt').text(() => infoData[currentScreen]['text']);
   d3.select('#legendtxt').text(() => {
     let curVar = infoData[currentScreen]['value'];
@@ -55,8 +61,9 @@ function changeScreen() {
     else displayLegend = "Delinquencies Last 7 Years";
     return displayLegend;
   });
-  d3.selectAll('.graphComponent').remove();
 
+  // Repivot data with next variable and redraw
+  d3.selectAll('.graphComponent').remove();
   let filtered = pivotedData.map(loan => {
     let slice = {
       ProsperScore: loan.ProsperScore,
@@ -108,6 +115,7 @@ function pivot() {
 
 function draw(data, curVar) {
 
+  // Create a gradual color curve scale between green and yellow
   let colorScale = d3.scale.linear()
     .domain(d3.extent(data, d => d['value']))
     .interpolate(d3.interpolateHcl)
@@ -146,8 +154,6 @@ function draw(data, curVar) {
   let rects = svg.selectAll('rect')
     .data(data);
 
-  rects.exit().remove();
-
   rects.enter()
     .append('rect')
     .attr('x', d => xScale(d['IncomeRange']))
@@ -155,6 +161,7 @@ function draw(data, curVar) {
     .attr('width',  w / (data.length / 11) )
     .attr('height', yScale.rangeBand())
     .attr('fill', d => colorScale(d['value']) )
+    // Build a tooltip near mouse cursor on hover over a data rect and highlight it
     .on('mouseover', function(d) {
       d3.select(this)
         .style('stroke', 'hsla(0, 0%, 0%, 0.4')
@@ -166,6 +173,7 @@ function draw(data, curVar) {
       let tooltipW = tooltipDoc.clientWidth;
       let valText = "";
       let valNum = "";
+      // Format and scale variable text and data output
       if (curVar === "BorrowerAPR") {
         valText = 'Loan APR: ';
         valNum = (d['value']*100).toPrecision(4) + '%';
@@ -215,8 +223,6 @@ function draw(data, curVar) {
     .selectAll('rect')
     .data(legendData);
 
-  legend.exit().remove()
-
   legend.enter()
     .append('rect')
     .attr('y', (d, i) => i * legendCellHeight + legendCellHeight)
@@ -235,8 +241,6 @@ function draw(data, curVar) {
     .style('margin-left', '10px')
     .selectAll('text')
     .data(legendTextData);
-
-  legendText.exit().remove()
 
   legendText.enter()
     .append('text')
