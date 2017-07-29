@@ -11742,6 +11742,7 @@ div#notebook {
     page-break-inside: avoid; 
   }
 }
+
 a.button {
   color: black;
   text-decoration: none;
@@ -12531,7 +12532,7 @@ Name: LoanStatus, dtype: int64</pre>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>There are some 11 prosper scores here, while the definition table shows 10 as the max score, so these are in some error. Let's have a look at those.</p>
+<p>There are some prosper scores of 11 here, while the definition table shows 10 as the max score, so these may be some error. Let's have a look at those.</p>
 
 </div>
 </div>
@@ -12787,7 +12788,7 @@ Name: LoanStatus, dtype: int64</pre>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Now we have only the data we need, on 20,669 loans. It looks like a small portion of the loans didn't have a listed occupation, so perhaps it wasn't a required field in the application. However, this doesn't relate to the main question, I just want to look at it as a secondary feature, so this should be fine.</p>
+<p>Now we have only the data we need.</p>
 <p>Let's have a look at our now that we've cleaned it up.</p>
 
 </div>
@@ -15494,7 +15495,7 @@ OyKiYZK4IyIaJok7IqJh/j+4oHdopXQY1QAAAABJRU5ErkJggg==
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>This heatmap paints the clearest picture yet. It is abundantly clear that the higher prospect scores get a lower APR. There is a trend of lower APR for higher stated income range as well, but the effect isn't nearly as large as the prospect score, which makes sense since the prospect score is likely to be their aggregate of overall risk taking into account other factors.</p>
-<p>The link between prosper score and income range is extremely intersting to me. If prospect score is effectively this loan companies definition of risk and reliability of a person, and income range plays into the chances of payback, I wonder how well these factors can paint a picture with respect to the other fields indicating recipient "financial health".</p>
+<p>The link between prosper score and income range is extremely interesting to me. If prospect score is effectively this loan company's definition of risk and reliability of a person, and income range plays into the chances of payback, I wonder how well these factors can paint a picture with respect to the other fields indicating a borrower's "financial health".</p>
 
 </div>
 </div>
