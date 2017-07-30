@@ -76,11 +76,11 @@ function changeScreen() {
 }
 
 /**
- * Create a pivot table representation of data and draw
+ * Create a pivot table representation of data
  */
 function pivot() {
   let incomeRanges = ['$1-24,999', '$25,000-49,999', 
-  '$50,000-74,999', '$75,000-99,999', '$100,000+'];
+    '$50,000-74,999', '$75,000-99,999', '$100,000+'];
 
   let data = fullData;
   // Nest data by index and column
