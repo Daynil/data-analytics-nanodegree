@@ -7,7 +7,7 @@ let pivotedData;
 let infoData = [
   {
     "value": "BorrowerAPR",
-    "text": "This data set contains information about loans from the peer to peer lending company Prosper. Each borrower enters various information about themselves, including salary, which is verfied, as well as having a credit record pulled. Based on this data, Prosper calculates a 'Prosper Score', which indicates investment risk on a scale from 1-11, 11 being best, or lowest risk Shown below, we see that the lowest loan APRs go to those with the lowest risk score. Interestingly, salary doesn't play nearly as much a roll as the Prosper Score. Next, let's see how well Prosper Score and salary can paint a picture with respect to other indicators of financial health."
+    "text": "This data set contains information about loans from the peer to peer lending company Prosper. Each borrower enters various information about themselves, including salary, which is verfied, as well as having a credit record pulled. Based on this data, Prosper calculates a 'Prosper Score', which indicates investment risk on a scale from 1-11, 11 being best, or lowest risk. Shown below, we see that the lowest loan APRs go to those with the lowest risk score. Interestingly, salary doesn't play nearly as much a roll as the Prosper Score. Next, let's see how well Prosper Score and salary can paint a picture with respect to other indicators of financial health."
   },
   {
     "value": "RevolvingCreditBalance",
@@ -15,7 +15,7 @@ let infoData = [
   },
   {
     "value": "DelinquenciesLast7Years",
-    "text": "Much more concerning to loan companies is delinquency in payment. Below, we can see that a high rate of delinquency over the last 7 years is associated strongly with poorer Proper Scores. Additionally, it appears that higher rates of delinquency are more likely the less you earn, particularly if you are rated with a low Prosper Score, which indicates poorer financial health overall."
+    "text": "Much more concerning to loan companies is delinquency in payment. Below, we can see that a high rate of delinquency over the last 7 years is associated strongly with poorer Prosper Scores. Additionally, it appears that higher rates of delinquency are more likely the less you earn, particularly if you are rated with a low Prosper Score, which indicates poorer financial health overall."
   }
 ];
 
@@ -39,8 +39,8 @@ function init() {
  * Track mouse position to use when determining where to place tooltip near cursor.
  */
 function updateMouse(e) {
-	mouse.x = e.pageX;
-	mouse.y = e.pageY;
+  mouse.x = e.pageX;
+  mouse.y = e.pageY;
 }
 
 /**
@@ -79,7 +79,8 @@ function changeScreen() {
  * Create a pivot table representation of data and draw
  */
 function pivot() {
-  let incomeRanges = ['$1-24,999', '$25,000-49,999', '$50,000-74,999', '$75,000-99,999', '$100,000+']
+  let incomeRanges = ['$1-24,999', '$25,000-49,999', 
+  '$50,000-74,999', '$75,000-99,999', '$100,000+'];
 
   let data = fullData;
   // Nest data by index and column
@@ -97,10 +98,10 @@ function pivot() {
           .entries(data);
 
   // Unroll into pivot table
-  let pivotData = []
+  let pivotData = [];
   agg.forEach(prosperAgg => {
     prosperAgg.values.forEach(incomeAgg => {
-      let pivotPoint = {}
+      let pivotPoint = {};
       // Transform axes to integers for scaling
       pivotPoint['ProsperScore'] = +prosperAgg.key;
       pivotPoint['IncomeRange'] = incomeRanges.indexOf(incomeAgg.key) + 1;
@@ -129,10 +130,12 @@ function draw(data, curVar) {
     .rangeRoundBands([h, 0]);
 
   let xAxisTicks = ['$1-25k', '$25k-50k', '$50k-75k', '$75k-100k', '$100k+'];
-  let xAxis = d3.svg.axis().scale(xScale).orient('bottom').tickFormat(d => xAxisTicks[d - 1]);
+  let xAxis = d3.svg.axis().scale(xScale).orient('bottom')
+    .tickFormat(d => xAxisTicks[d - 1]);
 
   let yAxisTicks = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
-  let yAxis = d3.svg.axis().scale(yScale).orient('left').tickFormat(d => yAxisTicks[d - 1]);
+  let yAxis = d3.svg.axis().scale(yScale).orient('left')
+    .tickFormat(d => yAxisTicks[d - 1]);
 
   let svg = d3.select('#d3anchor')
     .append('svg')
@@ -180,7 +183,9 @@ function draw(data, curVar) {
       }
       else if (curVar === "RevolvingCreditBalance") {
         valText = "RC Balance: "
-        valNum = '$' + d['value'].toLocaleString(undefined, {maximumFractionDigits: 0});
+        valNum = '$' + d['value'].toLocaleString(undefined, {
+          maximumFractionDigits: 0
+        });
       }
       else {
         valText = 'DL7 Years: ';
@@ -244,7 +249,8 @@ function draw(data, curVar) {
 
   legendText.enter()
     .append('text')
-    .attr('y', (d, i) => i * legendCellHeight * (legendSteps / legendTextSteps) + legendCellHeight * 2 - 4)
+    .attr('y', (d, i) => i * legendCellHeight * 
+          (legendSteps / legendTextSteps) + legendCellHeight * 2 - 4)
     .text(d => {
       // Adjust display scale based on current variable
       if (curVar === "BorrowerAPR") {
@@ -258,9 +264,7 @@ function draw(data, curVar) {
         }
         return d.toLocaleString('en', stringOpts);
       }
-      else {
-        return Math.round(d);
-      }
+      return Math.round(d);
     });
 
     
